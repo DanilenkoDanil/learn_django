@@ -17,9 +17,13 @@ class SnippetList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gener
     serializer_class = SnippetSerializer
     
 
-class SnippetDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+class SnippetDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
+
+    def get(self, request, pk):
+        return self.retrieve(request, pk)
 
 
 @csrf_exempt
