@@ -9,36 +9,17 @@ from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
+from rest_framework import generics, mixins
 
 
-class SnippetList(APIView):
-    @staticmethod
-    def get(request):
-        snippets = Snippet.objects.all()
-        serializer = SnippetSerializer(snippets, many=True)
-        return Response(serializer.data, status=200)
+class SnippetList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+    
 
-    @staticmethod
-    def post(request):
-        serializer = SnippetSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
-        return Response(serializer.errors, status=400)
-
-
-class SnippetDetail(APIView):
-    @staticmethod
-    def get_object(pk):
-        try:
-            return Snippet.objects.get(id=pk)
-        except Snippet.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk):
-        snippet = self.get_object(pk)
-        serializer = SnippetSerializer(snippet)
-        return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+class SnippetDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
 
 
 @csrf_exempt
